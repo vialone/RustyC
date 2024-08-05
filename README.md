@@ -1,3 +1,5 @@
+note: i made preprocessor to process your code 3 times. so you can create nested macros, but it has depth limit. Keep it in mind.
+
 deps:
 - rustc
 - gcc
