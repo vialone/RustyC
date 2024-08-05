@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# find out input file between args
+if [ $# -eq 0 ]
+then
+    echo "Usage: rustyc <input file>"
+    exit 1
+fi
+
+for i in "$@"
+do
+    if [ -f "$i" ]
+    then
+        infile="$i"
+        # break
+        break
+    fi
+done
+
+# if $infile is empty, then we have no input file
+if [ -z "$infile" ]
+then
+    echo "Usage: rustyc <input file>"
+    exit 1
+fi
+
+# if $infile is not a file, then we have no input file
+if [ ! -f "$infile" ]
+then
+    echo "Usage: rustyc <input file>"
+    exit 1
+fi
+
+# if $infile is a directory, then we have no input file
+if [ -d "$infile" ]
+then
+    echo "Usage: rustyc <input file>"
+    exit 1
+fi
+
+tmpfile="__rustyc-tmp"
+tmpfile2="$tmpfile"-2
+tmpfile3="$tmpfile"-3
+
+cpp -P "$infile" > "$tmpfile"
+cpp -P "$tmpfile" > "$tmpfile2"
+cpp -P "$tmpfile2" > "$tmpfile3"
+
+ARGS=$@
+
+# replace $infile with $tmpfile in $ARGS
+ARGS=$(echo "$ARGS" | sed "s|$infile|$tmpfile3|g")
+
+rustc $ARGS
+
+rm "$tmpfile" "$tmpfile2" "$tmpfile3"
